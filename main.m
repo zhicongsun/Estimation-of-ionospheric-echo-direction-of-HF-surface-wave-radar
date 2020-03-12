@@ -4,7 +4,7 @@
     * Author: ZhicongSun from HITWH
     * Email:hitsunzhicong@163.com
     * Github address: https://github.com/RadarSun
-    * Data: from 2020.03.05 to 2020.xx.xx
+    * Data: from 2020.03.05 to 2020.03.12
 %}
 
 %%
@@ -49,10 +49,10 @@ ylabel('Y/m：海岸线');
 zlabel('Z');
 
 %g_echos.theta.num = [10  30 50];%俯仰
-g_echos.theta.num = 0;
+g_echos.theta.num = 10;
 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
 %g_echos.phi.num = [15 25 35];%方位
-g_echos.phi.num = 0;
+g_echos.phi.num = 60;
 g_echos.phi.rad = g_echos.phi.num*g_para.rad;
 
 %g_echos.num = 3;            %回波数
@@ -76,8 +76,8 @@ g_echos.t = (0:99)/1000;
 %g_echos.signal(2,:) = 10
 %g_echos.signal = rand(g_echos.num,g_echos.snapshot);
 
-test3();
-%beamforming()
+%test3();
+beamforming('normal');
 %doa();
 
 
