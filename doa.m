@@ -4,7 +4,7 @@ function doa(input)
             2D-DOA估计算法选择器
     Syntax：
             input:doa算法类型
-    Long description：
+    Log description：
             2020.03.10 添加doa选择器，加入music2d
 %}
     if nargin<1
@@ -24,7 +24,7 @@ function music2d()
     Function description:
             2D-MUSIC DOA算法
     Syntax：
-    Long description：
+    Log description：
             2020.03.10 完成music2d函数，存在非理想谱峰的问题
 %}
     global g_signal;
@@ -64,18 +64,11 @@ function music2d()
     SP(rowmax_id,linemax_id);
     SPmax=max(max(SP));
     SP=SP/SPmax; 
-    figure(2);
+    figure('Color','white');
     h = mesh(thet,f,SP);
     set(h,'Linewidth',2)
     xlabel('俯仰(degree)');
     ylabel('方位(degree)');
     zlabel('magnitude(dB)');
-    %figure(3);
-    %subplot(1,2,1);
-    %plot(thet,SP);
-    %xlabel('方位/degree');
-    %subplot(1,2,2);
-    %plot(f,SP);
-    %xlabel('俯仰/degree');
 
 end
