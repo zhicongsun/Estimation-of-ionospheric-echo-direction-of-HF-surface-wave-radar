@@ -31,16 +31,13 @@ g_array.y_num = 8;		        %Y方向阵元个数
 g_array.span = g_signal.lamda/2; %阵元间距
 g_array.x_pos = g_array.span : g_array.span : (g_array.x_num)*g_array.span;
 g_array.y_pos = 0 : g_array.span : (g_array.y_num-1)*g_array.span;
-% g_array.x_pos = 0 : g_array.span : (g_array.x_num-1)*g_array.span;
-% g_array.y_pos = g_array.span : g_array.span : (g_array.y_num-1)*g_array.span;
-
 
 g_axis_range.x = [g_array.span  2*g_array.span  3*g_array.span  4*g_array.span ...    %阵元位置信息 8x8共16个阵元
     5*g_array.span 6*g_array.span 7*g_array.span 8*g_array.span 0 0 0 0 0 0 0 0];
 g_axis_range.y = [0 0 0 0 0 0 0 0 0  g_array.span  2*g_array.span  3*g_array.span ...
     4*g_array.span 5*g_array.span 6*g_array.span 7*g_array.span];
 g_axis_range.z = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
-figure();
+figure('Name','L阵示意图','NumberTitle','off','Color','white','Position',[200 200 400 400]);
 scatter3(g_axis_range.x, g_axis_range.y, g_axis_range.z);
 axis([0, 9*g_array.span, 0, 9*g_array.span, 0, 9*g_array.span]);
 title("L阵接收阵列示意图");
@@ -48,19 +45,20 @@ xlabel('X/m');
 ylabel('Y/m：海岸线');
 zlabel('Z');
 
-%g_echos.theta.num = [10  30 50];%俯仰
-g_echos.theta.num = 10;
+% g_echos.theta.num = [15 45 65] ;
+% g_echos.phi.num = [15 46 70];
+% g_echos.theta.num = 60;
+% g_echos.phi.num = 10;
+g_echos.theta.num = [15 75];
+g_echos.phi.num = [75 15];
 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
-%g_echos.phi.num = [15 25 35];%方位
-g_echos.phi.num = 60;
 g_echos.phi.rad = g_echos.phi.num*g_para.rad;
 
-%g_echos.num = 3;            %回波数
-g_echos.num = 1;            %回波数
+g_echos.num = 3;            %回波数
 g_echos.snr = 10;
 g_echos.snapshot = 100; %节拍数
 g_echos.t = (0:99)/1000;
-%g_echos.signal = [sin(2*pi*g_signal.freq*g_echos.t) ;...
+% g_echos.signal = [sin(2*pi*g_signal.freq*g_echos.t) ;...
 %                  sin(2*pi*g_signal.freq*(g_echos.t+10));...
 %                  sin(2*pi*g_signal.freq*(g_echos.t+20))];
 % g_echos.signal = [sin(2*pi*g_signal.freq*g_echos.t) ;...

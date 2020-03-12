@@ -7,8 +7,8 @@ function test2()
     
     theta=linspace(-pi/2,pi/2,200);
     phi=linspace(-pi/2,pi/2,200);
-    theta0=45/180*pi;%来波方向
-    phi0 = 50/180*pi;
+    theta0=15/180*pi;%来波方向
+    phi0 = 25/180*pi;
 
     wx=exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*cos(theta0).*cos(phi0));
     for  i=1:length(phi)
