@@ -1,4 +1,32 @@
-function doa()
+function doa(input)
+%{
+    Function description:
+            2D-DOA估计算法选择器
+    Syntax：
+            input:doa算法类型
+    Long description：
+            2020.03.10 添加doa选择器，加入music2d
+%}
+    if nargin<1
+        input = "music2d";
+    end
+    switch input
+        case 'music2d'
+            music2d();
+        otherwise 
+            error('Error! Invalid input! ');
+    end
+end
+
+
+function music2d()
+%{
+    Function description:
+            2D-MUSIC DOA算法
+    Syntax：
+    Long description：
+            2020.03.10 完成music2d函数，存在非理想谱峰的问题
+%}
     global g_signal;
     global g_array;
     global g_echos;
