@@ -34,6 +34,7 @@ function music2d()
     
     %行是阵元个数，列是回波个数
     Ax = exp( -j*2*pi/g_signal.lamda*g_array.x_pos.'*(cos(g_echos.theta.rad).*cos(g_echos.phi.rad)));
+    %k =g_array.x_pos.'/g_signal.lamda
     Ay = exp( -j*2*pi/g_signal.lamda*g_array.y_pos.'*(cos(g_echos.theta.rad).*sin(g_echos.phi.rad)));
     A = [Ax ; Ay];%行总阵元个数
     X = A*g_echos.signal;
@@ -51,17 +52,17 @@ function music2d()
             phim1 = thet(ang1)*g_para.rad; 
             f(ang2) = ang2-1;
             phim2 = f(ang2)*g_para.rad;
-            ax = exp(-j*2*pi*g_array.x_pos.'*cos(phim1)*cos(phim2));
-            ay = exp(-j*2*pi*g_array.y_pos.'*cos(phim1)*sin(phim2));
+            ax = exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*cos(phim1)*cos(phim2));
+            ay = exp(-j*2*pi/g_signal.lamda*g_array.y_pos.'*cos(phim1)*sin(phim2));
             a = [ax;ay];
             SP(ang1,ang2) = 1/(a'*Un*Un'*a);
         end
     end
     SP=abs(SP);
-    [linemax,linemax_id] = max(SP);
-    [rowmax,rowmax_id] = max(linemax);
-    rowmax_id
-    SP(rowmax_id,linemax_id);
+    %[linemax,linemax_id] = max(SP);
+    %[rowmax,rowmax_id] = max(linemax);
+    %rowmax_id
+    %SP(rowmax_id,linemax_id);
     SPmax=max(max(SP));
     SP=SP/SPmax; 
     figure('Color','white');
