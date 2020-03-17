@@ -37,52 +37,81 @@ function normaldbf()
     phi.rad=linspace(-pi/2,pi/2,181);
     phi.num = phi.rad/pi*180;
 
-    wx=exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*cos(g_echos.theta.rad).*cos(g_echos.phi.rad));
+    %普通数字波束形成
+    wx=exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*sin(g_echos.theta.rad).*cos(g_echos.phi.rad));
     wx = sum(wx,2);%对行求和,即对各个信源的导向向量累加,作用类似wx = wx(:,1) + wx(:,2);
-    wy=exp(-j*2*pi/g_signal.lamda*g_array.y_pos.'*cos(g_echos.theta.rad).*sin(g_echos.phi.rad));
+    wy=exp(-j*2*pi/g_signal.lamda*g_array.y_pos.'*sin(g_echos.theta.rad).*sin(g_echos.phi.rad));
     wy = sum(wy,2);
     W = kron(wx,wy);%相当于将wx*wy矩阵的每一列移位到第一列末尾，形成一维向量
+    X = g_echos.signal*W;
+    X1 = awgn(X,g_echos.snr,'measured');
+    Rxx = X1*X1'/g_echos.snapshot;   
     for k = 1:length(theta.rad)
         for  i = 1:length(phi.rad)
-            ax=exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*cos(theta.rad(k)).*cos(phi.rad(i)));
-            ay=exp(-j*2*pi/g_signal.lamda*g_array.y_pos.'*cos(theta.rad(k)).*sin(phi.rad(i)));
+            ax=exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*sin(theta.rad(k)).*cos(phi.rad(i)));
+            ay=exp(-j*2*pi/g_signal.lamda*g_array.y_pos.'*sin(theta.rad(k)).*sin(phi.rad(i)));
             A = kron(ax,ay);
-            P(k,i) = W'*A;
+            F(k,i) = W'*A;
+            P(k,i) = A'*Rxx*A;
         end        
     end
+    toc;
+    disp(['普通波束形成算法用时：',num2str(toc),'s']);
 
-    patternmag=abs(P);
-    patternmagnorm=patternmag/max(max(patternmag));
-    patterndB=20*log10(patternmag);
-    patterndBnorm=20*log10(patternmagnorm);
-    
-%     absp_theta = abs(P(:,(g_echos.phi.num+91)));
-%     absp_phi = abs(P((g_echos.theta.num+91),:));
-    absp_theta = sum(patternmag,1);
-    absp_phi = sum(patternmag,2);
-    
+    %画方向图
+    abs_F=abs(F);
+    %abs_F_norm=abs_F/max(max(abs_F));
+    %abs_F_dB=20*log10(abs_F);
+    %abs_F_norm_dB=20*log10(abs_F_norm);
+    absf_theta = sum(abs_F,2);
+    absf_phi = sum(abs_F,1);
     figure('Name','方向图','NumberTitle','off','Color','white','Position',[600 50 550 750]);
     subplot(311);
-    %patternmag = patternmag';% mesh太坑了，要先XY置换下
-    %h = meshc(phi.num,theta.num,patternmag);% mesh(X,Y,Z)X,Y分别对应Z的列、行
-    h = meshc(phi.num(91:181),theta.num(91:181),patternmag(91:181,91:181));% mesh(X,Y,Z)X,Y分别对应Z的列、行
+    f = meshc(phi.num,theta.num,abs_F);% mesh(X,Y,Z)X,Y分别对应Z的列、行，mesh太坑了，要先XY置换下
     title(['二维方向图 来波方向为theta=[' num2str(g_echos.theta.num) ']' ',phi=[' num2str(g_echos.phi.num) ']' ]);
-    set(h,'Linewidth',2);
+    set(f,'Linewidth',2);
     xlabel('方位角phi(degree)');
     ylabel('俯仰角theta(degree)');
-    zlabel('abs of P');
+    zlabel('abs of F');
     subplot(312);
-    plot(theta.num(91:181),absp_theta(91:181));
-    %plot(theta.num,absp_theta);
+    plot(theta.num,absf_theta);
     title('俯仰角 的方向图');
     xlabel('theta(degree)');
     ylabel('abs of Ptheta');
     subplot(313);
-    plot(phi.num(91:181),absp_phi(91:181));   
-    %plot(phi.num,absp_phi);
+    plot(phi.num,absf_phi);
     title('方位角 的方向图');
     xlabel('phi(degree)');
     ylabel('abs of Pphi');
-    toc;
-    disp(['普通波束形成算法用时：',num2str(toc),'s']);
+    
+    %画功率谱
+    abs_P = abs(P);
+    absp_theta = sum(abs_P,2);%2是对列相加，得到列向量；1则是得到行向量
+    absp_phi = sum(abs_P,1);
+    figure('Name','功率谱','NumberTitle','off','Color','white');
+    subplot(311);
+    p = meshc(phi.num(91:181),theta.num(91:181),abs_P(91:181,91:181));
+    title(['二维功率谱 来波方向为theta=[' num2str(g_echos.theta.num) ']' ',phi=[' num2str(g_echos.phi.num) ']' ]);
+    set(p,'Linewidth',2);
+    xlabel('方位角phi(degree)');
+    ylabel('俯仰角theta(degree)');
+    zlabel('abs of P');
+    subplot(312);
+    plot(theta.num,absp_theta);
+    title('俯仰角 的功率谱');
+    xlabel('theta(degree)');
+    ylabel('abs of Ptheta');
+    subplot(313);
+    plot(phi.num,absp_phi);
+    title('方位角 的功率谱');
+    xlabel('phi(degree)');
+    ylabel('abs of Pphi');
+
+    %谱峰搜索
+    [temp_ptheta,theta_estimation] = max(absp_theta);
+    [temp_pphi,phi_estimation] = max(absp_phi);
+    theta_estimation = theta_estimation-91;
+    phi_estimation = phi_estimation-91;
+    disp(['估计角度为[',num2str(theta_estimation),',',num2str(phi_estimation),']']);
+
 end 
