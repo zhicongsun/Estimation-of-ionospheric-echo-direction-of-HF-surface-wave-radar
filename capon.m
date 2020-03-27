@@ -18,7 +18,7 @@ function [abs_f,abs_p]=capon(theta0,element_num,d_lamda)
         theta0 = 30/180*pi;
     end
     imag=sqrt(-1);
-    snapshot = 100;
+    snapshot = 200;
     snr = 10;
     theta=linspace(-pi/2,pi/2,200);
     a=exp(imag*2*pi*d_lamda*[0:element_num-1]'*sin(theta0));%MxK
@@ -39,7 +39,11 @@ function [abs_f,abs_p]=capon(theta0,element_num,d_lamda)
         p(j) = 1/(w'*R*w);
     end
     abs_f=abs(f);
+    abs_f_max=max(abs_f);
+    abs_f = 10*log10(abs_f/abs_f_max);
     abs_p=abs(p);
+    abs_p_max=max(abs_p);
+    abs_p = 10*log10(abs_p/abs_p_max);
 end    
 
 % function capon()
