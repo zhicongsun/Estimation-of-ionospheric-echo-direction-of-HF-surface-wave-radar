@@ -3,9 +3,92 @@
     clear global;
     close all;
     
-    oned_testmode = 'theta_and_array_numb';
+    oned_testmode = 'music_and_espirit';
     
     switch oned_testmode
+        case 'music_and_espirit'
+            theta0 = [10 30 60]/180*pi;
+            theta=linspace(-90,90,361);
+            [abs_p,peak_ang,snr1,rmse1] = music(theta0,8,0.5,'not_multi');
+            [snr2,rmse2] = espirit(theta0,8,0.5);
+            figure('Color','white');
+            plot(snr1,rmse1,'r*-',snr2,rmse2,'b*-');
+            title('MUSIC算法与ESPRIT算法不同信噪比下测角均方误差');
+            xlabel('SNR');ylabel('RMSE');
+            legend('MUSIC','ESPIRIT');
+        case 'rootmusic_and_espirit'
+            theta0 = [0 30 60]/180*pi;
+            [snr1,rmse1] = root_music(theta0,8,0.5);  
+            [snr2,rmse2] = espirit(theta0,8,0.5);
+            figure('Color','white');
+            plot(snr1,rmse1,'ro-',snr2,rmse2,'g*-');
+            grid on;
+            title('ROOT-MUSIC算法与ESPRIT算法不同信噪比下测角均方误差');
+            xlabel('SNR');ylabel('RMSE');
+            legend('ROOT-MUSIC','ESPIRIT');
+        case 'nor_and_ss_music'
+            theta0 = [10 30 60]/180*pi;
+            theta=linspace(-90,90,361);
+            [abs_p1,peak_ang1] = music(theta0,8,0.5,'multi_path');
+            abs_p2 = ss_music(theta0,8,0.5,'multi_path');
+            figure('Color','white');
+            h=plot(theta,abs_p1,'g',theta,abs_p2,'r');
+            set(h,'Linewidth',2)
+            xlabel('angle (degree)')
+            ylabel('abs of P (dB)')
+            axis([-90 90 -60 0]);
+            set(gca, 'XTick',[-90:30:90]);
+            grid on;
+            legend('MUSIC','空间平滑MUSIC');
+            title({['MUSIC算法和空间平滑MUSIC算法在多径传输下的性能比较']...
+                    ['来波方向为:' num2str(theta0/pi*180) '信源相同的方向为:' num2str(theta0(1:2)/pi*180)]});
+        case 'espirit'
+            theta0 = [45 30 60]/180*pi;
+            [snr,rmse] = espirit(theta0,8,0.5);
+            figure('Color','white');
+            plot(snr,rmse,'ro-');
+            title('ESPRIT算法不同信噪比下测角均方误差');
+            xlabel('SNR');ylabel('RMSE');
+        case 'root_music'
+            theta0 = [45 30 60]/180*pi;
+            [snr,rmse] = root_music(theta0,8,0.5);  
+            figure('Color','white');
+            plot(snr,rmse,'ro-');
+            title('ROOT-MUSIC算法不同信噪比下测角均方误差');
+            xlabel('SNR');ylabel('RMSE');
+        case 'ss_music'
+            theta=linspace(-90,90,361);
+            theta0 = [0 30 60]/180*pi;
+            abs_p = ss_music(theta0,8,0.5,'multi_path');
+            figure('Color','white');
+            h=plot(theta,abs_p);
+            set(h,'Linewidth',2);
+            xlabel('angle (degree)');
+            ylabel('abs of P (dB)');
+            axis([-90 90 -60 0]);
+            set(gca, 'XTick',[-90:30:90], 'YTick',[-60:10:0]);
+            grid on;
+            title('平滑MUSIC功率谱');
+        case 'music'
+            theta0 = [10 30 60]/180*pi;
+            [abs_p,peak_ang,snr,rmse] = music(theta0,8,0.5,'not_multi');
+            theta=linspace(-90,90,361);
+            figure('Color','white');
+            h=plot(theta,abs_p);
+            hold on;
+            plot(peak_ang,abs_p(peak_ang*2+181),'ro');
+            set(h,'Linewidth',2);
+            xlabel('angle (degree)');
+            ylabel('abs of P (dB)');
+            axis([-90 90 -60 0]);
+            set(gca, 'XTick',[-90:30:90]);
+            grid on;
+            title( {['MUSIC功率谱,来波方向为:' num2str(theta0/pi*180)]...
+                ['谱峰搜索结果为:' num2str(peak_ang)]});
+            figure('Color','white');
+            plot(snr,rmse,'ro-');
+            title('MUSIC算法不同信噪比下测角均方误差');
+            xlabel('SNR');ylabel('RMSE');
         case 'normal_theta_and_direction'
             %% 普通波束形成的波束宽度随方向的变化
             theta=linspace(-pi/2,pi/2,200);
@@ -19,21 +102,20 @@
             figure('Color','white');
             subplot(411);
             plot(theta*180/pi,abs_f1,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(1)/pi*180) '度'])
+            title(['16阵元线阵方向图，指向方向为',num2str(theta0(1)/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
             subplot(412);
             plot(theta*180/pi,abs_f2,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(2)/pi*180) '度'])
+            title(['16阵元线阵方向图，指向方向为',num2str(theta0(2)/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
             subplot(413);
             plot(theta*180/pi,abs_f3,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(3)/pi*180) '度'])
+            title(['16阵元线阵方向图，指向方向为',num2str(theta0(3)/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
             subplot(414);
             plot(theta*180/pi,abs_f4,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(4)/pi*180) '度'])
+            title(['16阵元线阵方向图，指向方向为',num2str(theta0(4)/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
-
         case 'normal_resolution'
             %% 普通波束形成的分辨力问题 
             theta=linspace(-pi/2,pi/2,200);
@@ -47,15 +129,15 @@
             figure('Color','white');
             subplot(311);
             plot(theta*180/pi,abs_p1,'r');grid on;
-            title(['8阵元线阵功率谱，来波方向为',num2str(theta1/pi*180) '度'])
+            title(['8阵元线阵功率谱，来波方向为',num2str(theta1/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
             subplot(312);
             plot(theta*180/pi,abs_p2,'r');grid on;
-            title(['8阵元线阵功率谱，来波方向为',num2str(theta2/pi*180) '度'])
+            title(['8阵元线阵功率谱，来波方向为',num2str(theta2/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
             subplot(313);
             plot(theta*180/pi,abs_p3,'r');grid on;
-            title(['8阵元线阵功率谱，来波方向为',num2str(theta3/pi*180) '度'])
+            title(['8阵元线阵功率谱，来波方向为',num2str(theta3/pi*180) '度']);
             xlabel('theta/radian');ylabel('abs of P');
 
         case 'theta_and_array_numb'
