@@ -69,6 +69,12 @@ function capondbf()
     abs_F=abs(F);
     absf_theta = sum(abs_F,2);
     absf_phi = sum(abs_F,1);
+    abs_F_max = max(max(abs_F));
+    abs_F = 10*log10(abs_F/abs_F_max);
+    absf_theta_max = max(absf_theta);
+    absf_theta = 10*log10(absf_theta/absf_theta_max);
+    absf_phi_max = max(absf_phi);
+    absf_phi = 10*log10(absf_phi/absf_phi_max);
     figure('Name','方向图','NumberTitle','off','Color','white','Position',[600 50 550 750]);
     subplot(311);
     f = meshc(phi.num,theta.num,abs_F);% mesh(X,Y,Z)X,Y分别对应Z的列、行，mesh太坑了，要先XY置换下
@@ -92,6 +98,12 @@ function capondbf()
     abs_P = abs(P);
     absp_theta = sum(abs_P,2);%2是对列相加，得到列向量；1则是得到行向量
     absp_phi = sum(abs_P,1);
+    abs_P_max = max(max(abs_P));
+    abs_P = 10*log10(abs_P/abs_P_max);
+    absp_theta_max = max(absp_theta);
+    absp_theta = 10*log10(absp_theta/absp_theta_max);
+    absp_phi_max = max(absp_phi);
+    absp_phi = 10*log10(absp_phi/absp_phi_max);
     %谱峰搜索
     [temp_ptheta,theta_estimation] = max(absp_theta);
     [temp_pphi,phi_estimation] = max(absp_phi);
@@ -174,6 +186,13 @@ function normaldbf()
     abs_F=abs(F);
     absf_theta = sum(abs_F,2);
     absf_phi = sum(abs_F,1);
+    abs_F_max = max(max(abs_F));
+    abs_F = 10*log10(abs_F/abs_F_max);
+    absf_theta_max = max(absf_theta);
+    absf_theta = 10*log10(absf_theta/absf_theta_max);
+    absf_phi_max = max(absf_phi);
+    absf_phi = 10*log10(absf_phi/absf_phi_max);
+
     figure('Name','方向图','NumberTitle','off','Color','white','Position',[600 50 550 750]);
     subplot(311);
     f = meshc(phi.num,theta.num,abs_F);% mesh(X,Y,Z)X,Y分别对应Z的列、行，mesh太坑了，要先XY置换下
@@ -201,6 +220,13 @@ function normaldbf()
     abs_P = abs(P);
     absp_theta = sum(abs_P,2);%2是对列相加，得到列向量；1则是得到行向量
     absp_phi = sum(abs_P,1);
+    abs_P_max = max(max(abs_P));
+    abs_P = 10*log10(abs_P/abs_P_max);
+    absp_theta_max = max(absp_theta);
+    absp_theta = 10*log10(absp_theta/absp_theta_max);
+    absp_phi_max = max(absp_phi);
+    absp_phi = 10*log10(absp_phi/absp_phi_max);
+
     %谱峰搜索
     [temp_ptheta,theta_estimation] = max(absp_theta);
     [temp_pphi,phi_estimation] = max(absp_phi);
