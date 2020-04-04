@@ -22,7 +22,7 @@ g_signal.freq = 4.7*10^6;     %发射（接收）信号频率4.7Mhz
 g_signal.lamda = (3*10^8)/g_signal.freq;%发射（接收）信号波长
 
 %默认的可变参数
-testmode = 'dbf';
+testmode = 'doa';
 g_array.num = 16;                %天线阵元总个数
 g_array.x_num = 8;		        %X方向阵元个数
 g_array.y_num = 8;		        %Y方向阵元个数
@@ -81,25 +81,31 @@ switch testmode
         beamforming('normal');
     case 'snapshot_num'
     case 'doa'
-        g_echos.num = 3;            %回波数 
-        g_echos.theta.num = [15 45 75] ;
-        g_echos.phi.num = [70 46 10];
+        g_array.num = 32;                %天线阵元总个数
+        g_array.x_num = 16;		        %X方向阵元个数
+        g_array.y_num = 16;		        %Y方向阵元个数
+        g_array.span = g_signal.lamda/2; %阵元间距
+        g_array.x_pos = g_array.span : g_array.span : (g_array.x_num)*g_array.span;
+        g_array.y_pos = 0 : g_array.span : (g_array.y_num-1)*g_array.span;
+
+        g_echos.snr = 100;
+        g_echos.theta.num = [10 40 70] ;
+        g_echos.phi.num = [65 20 40];
+        g_echos.num = length(g_echos.theta.num);
         g_echos.theta.rad = g_echos.theta.num*g_para.rad;
         g_echos.phi.rad = g_echos.phi.num*g_para.rad;
         g_echos.signal = rand(g_echos.num,g_echos.snapshot);
-        doa();
-        g_echos.num = 5;            %回波数 
-        g_echos.theta.num = [15 35 45 60 75] ;
-        g_echos.phi.num = [70 60 45 35 15];
-        g_echos.theta.rad = g_echos.theta.num*g_para.rad;
-        g_echos.phi.rad = g_echos.phi.num*g_para.rad;
-        g_echos.signal = rand(g_echos.num,g_echos.snapshot);
-        doa();
-%         g_echos.signal = [exp(j*2*pi*g_signal.freq*g_echos.t);...
-%                           exp(j* (2*pi*(g_signal.freq+1)*g_echos.t+30*g_para.rad) );...
-%                           exp(j* (2*pi*(g_signal.freq+2)*g_echos.t+60*g_para.rad) )];
+        doa('esprit2d');
+%         g_echos.num = 5;            %回波数 
+%         g_echos.theta.num = [15 35 45 60 75] ;
+%         g_echos.phi.num = [70 60 45 35 15];
+%         g_echos.theta.rad = g_echos.theta.num*g_para.rad;
+%         g_echos.phi.rad = g_echos.phi.num*g_para.rad;
+%         g_echos.signal = rand(g_echos.num,g_echos.snapshot);
+%         doa();
+        
     case 'dbf'
-        dbf_mode = 'normal_and_capon';
+        dbf_mode = 'normal';
         switch dbf_mode
             case 'normal_and_capon'
                 %% 对比二维普通波束形成和二维capon
@@ -238,3 +244,4 @@ function  plotarray()
     ylabel('Y/m：海岸线');
     zlabel('Z');
 end
+
