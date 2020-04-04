@@ -1,32 +1,6 @@
-function [snr,rmse]=espirit(theta0,element_num,d_lamda)
-    twpi = 2*pi;
-    d=0:d_lamda:(element_num-1)*d_lamda;     
-    iwave = length(theta0);    
-    n = 200;
-    A=exp(-j*twpi*d.'*sin(theta0));
-    S=randn(iwave,n);
-    snr0=0:1:30;
-    for isnr=1:20
-        X0=A*S;
-        X=awgn(X0,snr0(isnr),'measured');
-        Rxx=X*X'/n;
-        [EV,D]=eig(Rxx);
-        EVA=diag(D)';
-        [EVA,I]=sort(EVA);
-        EVA=fliplr(EVA);
-        EV=fliplr(EV(:,I)); 
-        estimates=(tls_esprit(d_lamda,Rxx,iwave));
-        theta0_sort = sort(theta0)/pi*180;
-        doaes(isnr,:)=sort(estimates(1,:));
-        rmse(isnr) = sqrt( sum((theta0_sort-doaes(isnr,:)).^2)/iwave);
-    end
-    snr = snr0(1:20);
-end
-
-function estimate =  tls_esprit(d_lamda,Rxx,echos_num)
+function [rmse]=espirit(theta0,element_num)
     %*******************************************************
-    % This function calculates TLS-ESPRIT estimator for
-    % uniform linear array.
+    % 共轭ESPRIT算法
     %
     % Inputs
     %    d_lamda       sensor separation in wavelength
@@ -37,52 +11,70 @@ function estimate =  tls_esprit(d_lamda,Rxx,echos_num)
     %    estimate  estimated angles in degrees
     %              estimated powers
     %*******************************************************
-    twpi = 2.0*pi;
-    derad = pi / 180.0;
-    radeg = 180.0 / pi;
-    
-    % eigen decomposition of Rxx
-    [K,KK] = size(Rxx);
-    [V,D]=eig(Rxx);
-    EVA = real(diag(D)');
-    [EVA,I] = sort(EVA);
-    EVA=fliplr(EVA);
-    EV=fliplr(V(:,I));
-    
-    %  composition of E_{xy} and E_{xy}^H E_{xy} = E_xys
-    Exy = [EV(1:K-1,1:echos_num)...
-            EV(2:K,1:echos_num)];
-    E_xys = Exy'*Exy;
-    
-    % eigen decomposition of E_xys
-    [V,D]=eig(E_xys);
-    EVA_xys = real(diag(D)');
-    [EVA_xys,I] = sort(EVA_xys);
-    EVA_xys=fliplr(EVA_xys);
-    EV_xys=fliplr(V(:,I));
-    
-    % decomposition of eigenvectors
-    Gx = EV_xys(1:echos_num,echos_num+1:echos_num*2);
-    Gy = EV_xys(echos_num+1:echos_num*2,echos_num+1:echos_num*2);
-    
-    % calculation of  Psi = - Gx [Gy]^{-1}
-    Psi = - Gx/Gy;
-    
-    % eigen decomposition of Psi
-    [V,D]=eig(Psi);
-    EGS = diag(D).';
-    [EGS,I] = sort(EGS);
-    EGS=fliplr(EGS);
-    EVS=fliplr(V(:,I));
-     
-    % DOA estimates
-    ephi = atan2(imag(EGS), real(EGS));
-    ange = - asin( ephi / twpi / d_lamda ) * radeg;
-    estimate(1,:)=ange;
-    
-    % power estimates
-    T = inv(EVS);
-    powe = T*diag(EVA(1:echos_num) - EVA(K))*T';
-    powe = abs(diag(powe).')/K;
-    estimate(2,:)=powe;
+    source_number=length(theta0);%信元数
+    sub_sensor_number=element_num-1;%子阵元数
+    theta0_sort = sort(theta0);
+    snapshot_number=1024; 
+    d_lamda = 0.5;
+    A=exp(j*d_lamda*2*pi*(0:element_num-1).'*sin(theta0/180*pi));
+    %估计信源个数
+    snr=10;
+    s=sqrt(10.^(snr/10))*randn(source_number,snapshot_number);%仿真信号
+    x=A*s+(1/sqrt(2))*(randn(element_num,snapshot_number)+1j*randn(element_num,snapshot_number));
+    Rxx = x*x'/snapshot_number;
+    [~,value]=eig(Rxx);
+    value = diag(value);
+    [value_sort,~] = sort(value,'descend');
+    for i = 1:(size(value)-2)
+        gama(i) = value_sort(i)/value_sort(i+1);
+    end
+    [~,esti_source_num] = max(gama);
+    disp(['信噪比为10dB下估计信源数目：' num2str(esti_source_num)]);
+
+    snr0=-10:1:10;
+    rmse = zeros(1,20);
+    store_doa = zeros(20,source_number);
+    for isnr=1:20
+        s=sqrt(10.^(snr0(isnr)/10))*randn(source_number,snapshot_number);%仿真信号
+        x=A*s+(1/sqrt(2))*(randn(element_num,snapshot_number)+1j*randn(element_num,snapshot_number));
+        x1=x(1:sub_sensor_number,:);
+        x2 = x(2:sub_sensor_number+1,:);
+
+        %对两个子阵的模型进行合并
+        X=[x1;x2];
+        R=X*X'/snapshot_number;
+
+        %对R进行奇异值分解
+        [U,S,V]=svd(R);
+        R=R-S(2*sub_sensor_number,2*sub_sensor_number)*eye(2*sub_sensor_number);
+        [U,S,V]=svd(R);
+        Us=U(:,1:source_number);
+        Us1=Us(1:sub_sensor_number,:);
+        Us2=Us((sub_sensor_number+1):2*sub_sensor_number,:);
+        %形成矩阵Us12
+        Us12=[Us1,Us2];
+        %对“Us12'*Us12”进行特征分解，得到矩阵E
+        [F,Sa,Va]=svd(Us12'*Us12);
+        %将E分解为四个小矩阵
+        %F11=F(1:source_number,1:source_number);
+        F12=F(1:source_number,(1+source_number):(2*source_number));
+        %F21=F((1+source_number):(2*source_number),1:source_number);
+        F22=F((1+source_number):(2*source_number),(1+source_number):(2*source_number));
+        %按照公式得到旋转不变矩阵M
+        E=-(F12*(inv(F22)));
+        %对得到的旋转不变矩阵进行特征分解
+        [V,d_lamda]=eig(E);
+        d_lamda=(diag(d_lamda)).';
+        doa=asin(angle(d_lamda)/pi)*180/pi;
+        doa=sort(doa);
+        rmse(isnr) = sqrt( sum(((theta0_sort-doa).^2))/source_number );
+        i = 1:source_number;
+        store_doa(isnr,i) = doa(i);
+    end 
+    figure('Color','white');
+    plot(snr0(1:20),store_doa(1:20,1:source_number).','o-');
+    grid on;
+    xlabel('SNR/dB');
+    ylabel('DOA 估计/度');
+    title('ESPRIT 算法在不同信噪比下的DOA估计');
 end
