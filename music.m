@@ -13,12 +13,11 @@ function [abs_p,peak_ang,snr,rmse]=music(theta0,element_num,d_lamda,multipath_mo
                 2020.03.25  ½¨Á¢º¯Êı
 %}  
 derad = pi/180;        
-radeg = 180/pi;
 twpi = 2*pi;
 d=0:d_lamda:(element_num-1)*d_lamda;     
-iwave = 3;              
+iwave = length(theta0);              
 n = 200;                 
-A=exp(-j*twpi*d.'*sin(theta0));
+A=exp(-j*twpi*d.'*sin(theta0/180*pi));
 if strcmp(multipath_mode,'multi_path')==1
     S0 = randn(iwave-1,n);
     S = [S0(1,:);S0];
@@ -37,9 +36,10 @@ for isnr=1:20
     EVA=fliplr(EVA);
     EV=fliplr(EV(:,I));
     % MUSIC
-    for iang = 1:361
-            angle(iang)=(iang-181)/2;
-            phim=derad*angle(iang);
+   theta=linspace(-90,90,200);
+
+    for iang = 1:length(theta)
+            phim=derad*theta(iang);
             a=exp(-j*twpi*d*sin(phim)).';
             L=iwave;    
             En=EV(:,L+1:element_num);
@@ -48,16 +48,18 @@ for isnr=1:20
     abs_p=abs(P);
     abs_p_max=max(abs_p);
     abs_p=10*log10(abs_p/abs_p_max);
-    peak_ang = [];
-    derivative = diff(abs_p);
-    for iang = 5:360
-        if( (abs_p(iang)>abs_p(iang-1)) && (abs_p(iang)>abs_p(iang+1)) && (derivative(iang-4)>0.5) )
-            peak_ang = [peak_ang iang];
-        end
-    end
-    peak_ang = (peak_ang-181)/2;
-    size(peak_ang)
-    rmse(isnr) = sqrt( sum((theta0/pi*180-peak_ang).^2)/iwave);
+%     peak_ang = [];
+%     derivative = diff(abs_p);
+%     for iang = 5:360
+%         if( (abs_p(iang)>abs_p(iang-1)) && (abs_p(iang)>abs_p(iang+1)) && (derivative(iang-4)>0.5) )
+%             peak_ang = [peak_ang iang];
+%         end
+%     end
+%     peak_ang = (peak_ang-181)/2;
+%     size(peak_ang)
+%     rmse(isnr) = sqrt( sum((theta0/pi*180-peak_ang).^2)/iwave);
+    rmse(isnr)=0;
+    peak_ang = 0;
 end
     snr = snr0(1:20);
 end

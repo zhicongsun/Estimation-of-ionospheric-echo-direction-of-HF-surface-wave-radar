@@ -274,9 +274,9 @@ function music2d()
     global g_para;
     
     %行是阵元个数，列是回波个数 MxK
-    Ax = exp( -j*2*pi/g_signal.lamda*g_array.x_pos.'*(cos(g_echos.theta.rad).*cos(g_echos.phi.rad)));
+    Ax = exp( j*2*pi/g_signal.lamda*g_array.x_pos.'*(cos(g_echos.theta.rad).*cos(g_echos.phi.rad)));
     %k =g_array.x_pos.'/g_signal.lamda
-    Ay = exp( -j*2*pi/g_signal.lamda*g_array.y_pos.'*(cos(g_echos.theta.rad).*sin(g_echos.phi.rad)));
+    Ay = exp( j*2*pi/g_signal.lamda*g_array.y_pos.'*(cos(g_echos.theta.rad).*sin(g_echos.phi.rad)));
     A = [Ax ; Ay];%行总阵元个数2MxK
     X = A*g_echos.signal;%2MxP
     X1 = awgn(X,g_echos.snr,'measured');
@@ -293,8 +293,8 @@ function music2d()
             phim1 = thet(ang1)*g_para.rad; 
             f(ang2) = ang2-1;
             phim2 = f(ang2)*g_para.rad;
-            ax = exp(-j*2*pi/g_signal.lamda*g_array.x_pos.'*cos(phim1)*cos(phim2));
-            ay = exp(-j*2*pi/g_signal.lamda*g_array.y_pos.'*cos(phim1)*sin(phim2));
+            ax = exp(j*2*pi/g_signal.lamda*g_array.x_pos.'*cos(phim1)*cos(phim2));
+            ay = exp(j*2*pi/g_signal.lamda*g_array.y_pos.'*cos(phim1)*sin(phim2));
             a = [ax;ay];%2Mx1
             SP(ang1,ang2) = 1/(a'*Un*Un'*a);
         end
@@ -309,9 +309,16 @@ function music2d()
     figure('Color','white');
     h = mesh(thet,f,SP);
     set(h,'Linewidth',2)
-    xlabel('俯仰(degree)');
-    ylabel('方位(degree)');
+    xlabel('方位角/degree');
+    ylabel('俯仰角/degree');
     zlabel('abs of P');
     title({['二维功率谱(MUSIC),阵元间距:' num2str(g_array.span/g_signal.lamda) 'lamda,']...
         ['实际方向为[theta,phi]=[' num2str(g_echos.theta.num) ',' num2str(g_echos.phi.num) ']']} );
+    
+    figure('Color','white');
+    imagesc(f,thet,SP,'CDataMapping','scaled');
+    title('二维Capon算法波束扫描功率谱');
+    xlabel('方位角phi/degree');
+    ylabel('俯仰角theta/degree');    
+    colorbar;
 end

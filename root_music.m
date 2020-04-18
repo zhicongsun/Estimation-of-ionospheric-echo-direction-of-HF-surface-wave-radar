@@ -11,16 +11,14 @@ function [snr,rmse]=root_music(theta0,element_num,d_lamda)
         Log description£º
                 2020.03.25  ½¨Á¢º¯Êý
 %} 
-derad = pi/180;
-radeg = 180/pi;
 twpi = 2*pi;
 d=0:d_lamda:(element_num-1)*d_lamda;     
 iwave = length(theta0);             
 n =200;                 
-A=exp(-j*twpi*d.'*(sin(theta0)));
+A=exp(-j*twpi*d.'*(sin(theta0/180*pi)));
 S=randn(iwave,n);
 X0=A*S;
-theta0_sort = sort(theta0)/pi*180;
+theta0_sort = sort(theta0);
 snr0=0:1:30;
 for isnr=1:20
     X=awgn(X0,snr0(isnr),'measured');

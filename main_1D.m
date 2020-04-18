@@ -6,8 +6,35 @@
     oned_testmode = 'compara_esprit';
     
     switch oned_testmode
+        case 'auto'
+            [beam1,en1] = lms();
+            [beam2,en2] = nlms();
+            [beam3,en3] = rls();
+             % plotting 
+            figure('Color','white');
+            angle=-90:180/200:(90-180/200); 
+%             subplot(2,1,1);
+            plot(angle,beam1);hold on;
+            plot(angle,beam2);hold on;
+            plot(angle,beam3);hold on;
+            legend('LMS','NLMS','RLS');
+            grid on;
+            xlabel('方向角/degree'); 
+            ylabel('幅度响应/dB'); 
+            title('方向图');
+
+            figure('Color','white');
+            semilogy(en1);hold on;
+            semilogy(en2);hold on;
+            semilogy(en3);hold on;
+            legend('LMS','NLMS','RLS');
+            grid on;
+            xlabel('迭代次数'); 
+            ylabel('MSE');  
+            title('MSE');
+
         case 'compara_esprit'
-            theta0 = [-60 -45 -30 -15 0 20 40 60];
+            theta0 = [-60 -45 -30 -15 0 20 40];
             [rmse1]=conjugate_esprit(theta0,8);
             [rmse2]=espirit(theta0,8);
             figure('Color','white');
@@ -91,53 +118,80 @@
             set(gca, 'XTick',[-90:30:90], 'YTick',[-60:10:0]);
             grid on;
             title('平滑MUSIC功率谱');
+            
+        case 'normal_and_music'
+            theta0 = [ -50 -30 -10 10  30 50 70 ];
+            [abs_f1,abs_p1] = normal(theta0,8,0.5);    
+            [abs_p2,peak_ang,snr,rmse] = music(theta0,8,0.5,'not_multi');
+            [abs_f3,abs_p3] = capon(theta0,8,0.5);
+            theta=linspace(-90,90,200);
+            figure('Color','white');
+            plot(theta,abs_p1);hold on;
+            plot(theta,abs_p2);hold on;
+            plot(theta,abs_p3);hold on;
+            xlabel('angle (degree)');
+            ylabel('abs of P /dB');
+            grid on;
+            title( ['功率谱,来波方向为:' num2str(theta0)]);
+            legend('延迟相加法','music','Capon');
+
         case 'music'
-            theta0 = [10 20 30 40];
+            theta0 = [10 20 30 40 50 60 70 ];
             [abs_p,peak_ang,snr,rmse] = music(theta0,8,0.5,'not_multi');
-            theta=linspace(-90,90,361);
+            theta=linspace(-90,90,200);
             figure('Color','white');
             h=plot(theta,abs_p);
-            hold on;
-            plot(peak_ang,abs_p(peak_ang*2+181),'ro');
-            set(h,'Linewidth',2);
+%             hold on;
+%             plot(peak_ang,abs_p(peak_ang*2+181),'ro');
+%             set(h,'Linewidth',2);
             xlabel('angle (degree)');
-            ylabel('abs of P (dB)');
-            axis([-90 90 -60 0]);
-            set(gca, 'XTick',[-90:30:90]);
+            ylabel('abs of P /dB');
+%             axis([-90 90 -60 0]);
+%             set(gca, 'XTick',[-90:30:90]);
             grid on;
-            title( {['MUSIC功率谱,来波方向为:' num2str(theta0)]...
-                ['谱峰搜索结果为:' num2str(peak_ang)]});
-            figure('Color','white');
-            plot(snr,rmse,'ro-');
-            title('MUSIC算法不同信噪比下测角均方误差');
-            xlabel('SNR');ylabel('RMSE');
+            title( ['MUSIC功率谱,来波方向为:' num2str(theta0)]);
+%             title( {['MUSIC功率谱,来波方向为:' num2str(theta0)]...
+%                 ['谱峰搜索结果为:' num2str(peak_ang)]});
+%             figure('Color','white');
+%             plot(snr,rmse,'ro-');
+%             title('MUSIC算法不同信噪比下测角均方误差');
+%             xlabel('SNR');ylabel('RMSE');
         case 'normal_theta_and_direction'
             %% 普通波束形成的波束宽度随方向的变化
             theta=linspace(-90,90,200);
             d_lamda = 1/2;
-            theta0 = [0 30 60 80];
-            [abs_f1,abs_p1] = normal(theta0(1),16,d_lamda);
-            [abs_f2,abs_p2] = normal(theta0(2),16,d_lamda);
-            [abs_f3,abs_p3] = normal(theta0(3),16,d_lamda);
-            [abs_f4,abs_p4] = normal(theta0(4),16,d_lamda);
+            theta0 = [0 40 60 80];
+            [abs_f1,abs_p1] = normal(theta0(1),8,d_lamda);
+            [abs_f2,abs_p2] = normal(theta0(2),8,d_lamda);
+            [abs_f3,abs_p3] = normal(theta0(3),8,d_lamda);
+            [abs_f4,abs_p4] = normal(theta0(4),8,d_lamda);
 
             figure('Color','white');
-            subplot(411);
-            plot(theta,abs_f1,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(1)) '度']);
+            plot(theta,abs_f1);hold on;
+            plot(theta,abs_f2);hold on;
+            plot(theta,abs_f3);hold on;
+            plot(theta,abs_f3);hold on;
+            grid on;
+            title('8阵元线阵方向图' );
             xlabel('theta/degree');ylabel('abs of F');
-            subplot(412);
-            plot(theta,abs_f2,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(2)) '度']);
-            xlabel('theta/degree');ylabel('abs of F');
-            subplot(413);
-            plot(theta,abs_f3,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(3)) '度']);
-            xlabel('theta/degree');ylabel('abs of F');
-            subplot(414);
-            plot(theta,abs_f4,'r');grid on;
-            title(['16阵元线阵方向图，指向方向为',num2str(theta0(4)) '度']);
-            xlabel('theta/degree');ylabel('abs of ');
+            legend('0度','40度','60度','80度');
+%             figure('Color','white');
+%             subplot(411);
+%             plot(theta,abs_f1,'r');grid on;
+%             title(['16阵元线阵方向图，指向方向为',num2str(theta0(1)) '度']);
+%             xlabel('theta/degree');ylabel('abs of F');
+%             subplot(412);
+%             plot(theta,abs_f2,'r');grid on;
+%             title(['16阵元线阵方向图，指向方向为',num2str(theta0(2)) '度']);
+%             xlabel('theta/degree');ylabel('abs of F');
+%             subplot(413);
+%             plot(theta,abs_f3,'r');grid on;
+%             title(['16阵元线阵方向图，指向方向为',num2str(theta0(3)) '度']);
+%             xlabel('theta/degree');ylabel('abs of F');
+%             subplot(414);
+%             plot(theta,abs_f4,'r');grid on;
+%             title(['16阵元线阵方向图，指向方向为',num2str(theta0(4)) '度']);
+%             xlabel('theta/degree');ylabel('abs of ');
         case 'normal_resolution'
             %% 普通波束形成的分辨力问题 
             theta=linspace(-90,90,200);
@@ -171,7 +225,7 @@
             [abs_f3,abs_p3] = normal(theta0,32,d_lamda);
             theta=linspace(-90,90,200);
             figure('Color','white');
-            subplot(211);
+%             subplot(211);
             plot(theta,abs_f1,'g');hold on;
             plot(theta,abs_f2,'r');hold on;
             plot(theta,abs_f3,'b');hold on;
@@ -180,88 +234,137 @@
             ylabel('abs of F')
             title([ '均匀线阵方向图','指向' num2str(theta0) '度' ]);
             legend('8阵元','16阵元','32阵元');
-            subplot(212);
-            plot(theta,abs_p1,'g');hold on;
-            plot(theta,abs_p2,'r');hold on
-            plot(theta,abs_p3,'b');hold on;
+%             subplot(212);
+%             plot(theta,abs_p1,'g');hold on;
+%             plot(theta,abs_p2,'r');hold on
+%             plot(theta,abs_p3,'b');hold on;
+%             grid on;
+%             xlabel('theta/degree')
+%             ylabel('abs of P')
+%             title([ '均匀线阵功率谱','来波方向为' num2str(theta0) '度']);
+%             legend('8阵元','16阵元','32阵元');
+
+        case 'normal'
+            %% 测试普通波束形成
+            theta0 = [-10,10];
+            d_lamda = 1/2;
+            [abs_f,abs_p] = normal(theta0,8,d_lamda/2);    
+            theta=linspace(-90,90,200);
+            figure('Color','white');
+            plot(theta,abs_f);hold on;
+            grid on;
+            xlabel('theta/degree')
+            ylabel('abs of F')
+            title([ '普通波束形成方向图'  '波束指向' num2str(theta0) '度' ]);
+            figure('Color','white');
+            plot(theta,abs_p);hold on;
             grid on;
             xlabel('theta/degree')
             ylabel('abs of P')
-            title([ '均匀线阵功率谱','来波方向为' num2str(theta0) '度']);
-            legend('8阵元','16阵元','32阵元');
-
+            title([ '延迟相加法功率谱' ]);
+            
         case 'theta_and_array_span'
             %% 测试阵元间距对波束宽度的影响
             theta0 = 0;
             d_lamda = 1/2;
-            [abs_f1,abs_p1] = normal(theta0,8,d_lamda/2);
+            [abs_f1,abs_p1] = normal(theta0,8,d_lamda/2);    
             [abs_f2,abs_p2] = normal(theta0,8,d_lamda);
             [abs_f3,abs_p3] = normal(theta0,8,d_lamda/2*3);
-            [abs_f4,abs_p4] = normal(theta0,8,d_lamda*2*1.5);
+            [abs_f4,abs_p4] = normal(theta0,8,d_lamda/2*5);
             theta=linspace(-90,90,200);
             figure('Color','white');
-            subplot(411);
-            plot(theta,abs_f1,'g');
+            plot(theta,abs_f1);hold on;
+            plot(theta,abs_f2);hold on;
+            plot(theta,abs_f3);hold on;
+            plot(theta,abs_f4);hold on;
             grid on;
             xlabel('theta/degree')
             ylabel('abs of F')
-            title([ '阵元间距' num2str(d_lamda/2) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
-            subplot(412);
-            plot(theta,abs_f2,'r');
-            grid on;
-            xlabel('theta/degree')
-            ylabel('abs of F')
-            title([ '阵元间距' num2str(d_lamda) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
-            subplot(413);
-            plot(theta,abs_f3,'b');
-            grid on;
-            xlabel('theta/degree')
-            ylabel('abs of F')
-            title([ '阵元间距' num2str(d_lamda/2*3) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
-            subplot(414);
-            plot(theta,abs_f4,'k');
-            grid on;
-            xlabel('theta/degree')
-            ylabel('abs of F')
-            title([ '阵元间距' num2str(d_lamda*2*1.5) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
+            legend('0.25lamda','0.5lamda','0.75lamda','1.25lamda');
+            title([ '阵元间距与波长的比例对方向图的影响'  ' 波束指向' num2str(theta0) '度' ]);
+            
+%             theta0 = 0;
+%             d_lamda = 1/2;
+%             [abs_f1,abs_p1] = normal(theta0,8,d_lamda/2);
+%             [abs_f2,abs_p2] = normal(theta0,8,d_lamda);
+%             [abs_f3,abs_p3] = normal(theta0,8,d_lamda/2*3);
+%             [abs_f4,abs_p4] = normal(theta0,8,d_lamda/2*5);
+%             theta=linspace(-90,90,200);
+%             figure('Color','white');
+%             subplot(411);
+%             plot(theta,abs_f1,'g');
+%             grid on;
+%             xlabel('theta/degree')
+%             ylabel('abs of F')
+%             title([ '阵元间距' num2str(d_lamda/2) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
+%             subplot(412);
+%             plot(theta,abs_f2,'r');
+%             grid on;
+%             xlabel('theta/degree')
+%             ylabel('abs of F')
+%             title([ '阵元间距' num2str(d_lamda) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
+%             subplot(413);
+%             plot(theta,abs_f3,'b');
+%             grid on;
+%             xlabel('theta/degree')
+%             ylabel('abs of F')
+%             title([ '阵元间距' num2str(d_lamda/2*3) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
+%             subplot(414);
+%             plot(theta,abs_f4,'k');
+%             grid on;
+%             xlabel('theta/degree')
+%             ylabel('abs of F')
+%             title([ '阵元间距' num2str(d_lamda*2*1.5) 'lamda均匀线阵方向图','指向' num2str(theta0) '度' ]);
 
         case 'normal_and_capon'
             %% 对比一维普通波束形成与capon
             theta0 = [30,60];
             d_lamda = 1/2;
             [abs_f1,abs_p1] = normal(theta0,8,d_lamda);
-            [abs_f2,abs_p2] = capon(theta0,16,d_lamda);
+            [abs_f2,abs_p2] = capon(theta0,8,d_lamda);
             theta=linspace(-90,90,200);
             figure('Color','white');
-            subplot(211);
-            plot(theta,abs_p1,'r');hold on;
+            plot(theta,abs_p1);hold on;
+            plot(theta,abs_p2);hold on;
             grid on;
             xlabel('theta/degree');
             ylabel('abs of P');
-            title([ '均匀线阵功率谱(普通波束形成)','来波方向为' num2str(theta0) '度']);
-            subplot(212);
-            plot(theta,abs_p2,'r');hold on;
-            grid on;
-            xlabel('theta/degree');
-            ylabel('abs of P');
-            title([ '均匀线阵功率谱(Capon)','来波方向为' num2str(theta0) '度']);
+            title([ '8阵元均匀线阵功率谱','来波方向为' num2str(theta0) '度']);
+            legend('normal','capon');
+            
             theta0 = [30,40];
             d_lamda = 1/2;
             [abs_f1,abs_p1] = normal(theta0,8,d_lamda);
             [abs_f2,abs_p2] = capon(theta0,16,d_lamda);
             figure('Color','white');
-            subplot(211);
-            plot(theta,abs_p1,'r');hold on;
+            plot(theta,abs_p1);hold on;
+            plot(theta,abs_p2);hold on;
             grid on;
             xlabel('theta/degree')
             ylabel('abs of P')
-            title([ '均匀线阵功率谱(普通波束形成)','来波方向为' num2str(theta0) '度']);
-            subplot(212);
-            plot(theta,abs_p2,'r');hold on;
+            title([ '8阵元均匀线阵功率谱','来波方向为' num2str(theta0) '度']);
+            legend('normal','capon');
+
+        case 'capon'
+            %% 对比一维普通波束形成与capon
+            theta0 = [0 35];
+            d_lamda = 1/2;
+            [abs_f,abs_p] = capon(theta0,16,d_lamda);
+            theta=linspace(-90,90,200);
+            figure('Color','white');
+            plot(theta,abs_f,'r');hold on;
+            plot(theta0(1),-30:0,'.',theta0(2),-30:0,'.');
             grid on;
-            xlabel('theta/degree')
-            ylabel('abs of P')
-            title([ '均匀线阵功率谱(Capon)','来波方向为' num2str(theta0) '度']);
+            xlabel('theta/degree');
+            ylabel('abs of P');
+            title([ 'Capon均匀线阵方向图(普通波束形成)','来波方向为' num2str(theta0) '度']);
+            figure('Color','white');
+            plot(theta,abs_p,'r');
+            grid on;
+            xlabel('theta/degree');
+            ylabel('abs of P');
+            title([ 'Capon均匀线阵功率谱(普通波束形成)','来波方向为' num2str(theta0) '度']);
+            
         otherwise
             disp('Please input mode!');
     end

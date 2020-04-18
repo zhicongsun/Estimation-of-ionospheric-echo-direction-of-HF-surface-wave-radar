@@ -17,25 +17,27 @@ function [abs_f,abs_p]=capon(theta0,element_num,d_lamda)
     if nargin == 0
         theta0 = 30;
     end
-    imag=sqrt(-1);
+    imag=sqrt(-1)
     snapshot = 200;
     snr = 10;
     theta=linspace(-90,90,200);
     a=exp(imag*2*pi*d_lamda*[0:element_num-1]'*sin(theta0/180*pi));%MxK
     if length(theta0) ~= 1
-        steer = exp(imag*2*pi*d_lamda*[0:element_num-1]'*sin(theta0(1)/180*pi));
+        steer = a(:,1);
     else
-        steer = exp(imag*2*pi*d_lamda*[0:element_num-1]'*sin(theta0/180*pi));
+        steer = a;
     end
     S = rand(length(theta0),snapshot);%KxP
     X = a*S;%MxP
     X1 = awgn(X,snr,'measured');
     Rxx = X1*X1'/snapshot; 
     R = inv(Rxx);
-    A = R*steer/(steer'*R*steer);
+    C = [a(:,1) a(:,2)];
+    F = [1 0]';
+    A=R*C*(inv(C'*R*C))*F;
     for  j=1:length(theta)
         w=exp(imag*2*pi*d_lamda*[0:element_num-1]'*sin(theta(j)/180*pi));%Mx1
-        f(j)=A'*w;%取第一个角做方向图
+        f(j) = A'*w;
         p(j) = 1/(w'*R*w);
     end
     abs_f=abs(f);

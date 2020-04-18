@@ -81,35 +81,42 @@ switch testmode
         beamforming('normal');
     case 'snapshot_num'
     case 'doa'
-        g_array.num = 32;                %天线阵元总个数
-        g_array.x_num = 16;		        %X方向阵元个数
-        g_array.y_num = 16;		        %Y方向阵元个数
-        g_array.span = g_signal.lamda/2; %阵元间距
-        g_array.x_pos = g_array.span : g_array.span : (g_array.x_num)*g_array.span;
-        g_array.y_pos = 0 : g_array.span : (g_array.y_num-1)*g_array.span;
-
-        g_echos.snr = 100;
-        g_echos.theta.num = [10 40 70] ;
-        g_echos.phi.num = [65 20 40];
-        g_echos.num = length(g_echos.theta.num);
-        g_echos.theta.rad = g_echos.theta.num*g_para.rad;
-        g_echos.phi.rad = g_echos.phi.num*g_para.rad;
-        g_echos.signal = rand(g_echos.num,g_echos.snapshot);
-        doa('esprit2d');
-%         g_echos.num = 5;            %回波数 
-%         g_echos.theta.num = [15 35 45 60 75] ;
-%         g_echos.phi.num = [70 60 45 35 15];
+%         g_array.num = 32;                %天线阵元总个数
+%         g_array.x_num = 16;		        %X方向阵元个数
+%         g_array.y_num = 16;		        %Y方向阵元个数
+%         g_array.span = g_signal.lamda/2; %阵元间距
+%         g_array.x_pos = g_array.span : g_array.span : (g_array.x_num)*g_array.span;
+%         g_array.y_pos = 0 : g_array.span : (g_array.y_num-1)*g_array.span;
+% 
+%         g_echos.snr = 100;
+%         g_echos.theta.num = [10 40 70] ;
+%         g_echos.phi.num = [65 20 40];
+%         g_echos.num = length(g_echos.theta.num);
 %         g_echos.theta.rad = g_echos.theta.num*g_para.rad;
 %         g_echos.phi.rad = g_echos.phi.num*g_para.rad;
 %         g_echos.signal = rand(g_echos.num,g_echos.snapshot);
-%         doa();
+%         doa('esprit2d');
+%         g_echos.theta.num = [15 35 45 60 75 -15 -30 -50 -75] ;
+%         g_echos.phi.num = [70 60 45 35 15 -15 -30 -50 -75];
+
+%         g_echos.theta.num = [15 25 35 45 55 65 75 ] ;
+%         g_echos.phi.num = [85 75 65  55 45 35 25 ];
+%         g_echos.theta.num = [15 25 35 ] ;
+%         g_echos.phi.num = [85 75 65 ];
+        g_echos.theta.num = [15 15 34 34 60 60 70 70];
+        g_echos.phi.num = [70 50 60 20 35 50 15 70];
+        g_echos.num = length(g_echos.theta.num);         
+        g_echos.theta.rad = g_echos.theta.num*g_para.rad;
+        g_echos.phi.rad = g_echos.phi.num*g_para.rad;
+        g_echos.signal = rand(g_echos.num,g_echos.snapshot);
+        doa();
         
     case 'dbf'
-        dbf_mode = 'normal';
+        dbf_mode = 'capon';
         switch dbf_mode
             case 'normal_and_capon'
                 %% 对比二维普通波束形成和二维capon
-                %可分辨
+                                %可分辨
                 g_echos.theta.num = [34,60];
                 g_echos.phi.num = [60,35];
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -133,11 +140,35 @@ switch testmode
                 g_echos.signal=rand(g_echos.num,g_echos.snapshot);
                 beamforming('normal');
                 beamforming('capon');
+%                 %可分辨
+%                 g_echos.theta.num = [34,60];
+%                 g_echos.phi.num = [60,35];
+%                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
+%                 g_echos.phi.rad = g_echos.phi.num*g_para.rad;
+%                 g_echos.num = length(g_echos.theta.num);
+%                 g_echos.snr = 10;
+%                 g_echos.snapshot = 100; %节拍数
+%                 g_echos.t = [0:99]/1000;
+%                 g_echos.signal=rand(g_echos.num,g_echos.snapshot);
+%                 beamforming('normal');
+%                 beamforming('capon');
+%                 %不可分辨
+%                 g_echos.theta.num = [34,50];
+%                 g_echos.phi.num = [40,34];
+%                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
+%                 g_echos.phi.rad = g_echos.phi.num*g_para.rad;
+%                 g_echos.num = length(g_echos.theta.num);
+%                 g_echos.snr = 10;
+%                 g_echos.snapshot = 100; %节拍数
+%                 g_echos.t = [0:99]/1000;
+%                 g_echos.signal=rand(g_echos.num,g_echos.snapshot);
+%                 beamforming('normal');
+%                 beamforming('capon');
 
             case 'capon' 
                 %% 测试二维capon
-                g_echos.theta.num = [34,60];
-                g_echos.phi.num = [60,35];
+                g_echos.theta.num = [15 34,60 70 -70 -55 -35 -15 -15  -30 -40  -60];
+                g_echos.phi.num = [70 60 35 15 -10 -30 -50 -65 -45  15 35  60];
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
                 g_echos.phi.rad = g_echos.phi.num*g_para.rad;
                 g_echos.num = length(g_echos.theta.num);
