@@ -8,7 +8,7 @@ function beamforming(input)
             2020.03.19  加入capondbf
 %}
     if nargin<1
-        input = "normal";
+        input = "capon";
     end
     switch input
         case 'normal'
@@ -99,6 +99,7 @@ function capondbf()
     absp_theta = sum(abs_P,2);%2是对列相加，得到列向量；1则是得到行向量
     absp_phi = sum(abs_P,1);
     abs_P_max = max(max(abs_P));
+
     abs_P = 10*log10(abs_P/abs_P_max);
     absp_theta_max = max(absp_theta);
     absp_theta = 10*log10(absp_theta/absp_theta_max);
@@ -137,12 +138,42 @@ function capondbf()
 
    
     figure('Color','white');
-    imagesc(phi.num,theta.num,abs_P,'CDataMapping','scaled');
+    imagesc(phi.num,theta.num,abs_P);
+    hold on;
     title('二维Capon算法波束扫描功率谱');
     xlabel('方位角phi/degree');
     ylabel('俯仰角theta/degree');    
+    colormap(jet);
     colorbar;
+    % saveas(gcf,'abs_P.jpg');
 
+    % peak_P = imregionalmax(abs(P));
+    % size_peak_P = size(peak_P);
+    % for iii = 1:size_peak_P(1)
+    %     for jjj = 1:size_peak_P(2)
+    %         if peak_P(iii,jjj)
+    %             scatter(jjj-91,iii-91);
+    %         end
+    %     end
+    % end
+    % hold on;
+    [M,~]=contour(phi.num,theta.num,abs_P,[-3.84,-3.84],':');
+    [~,mynum]=size(M);
+    Mx=M(1,2:mynum);
+    My=M(2,2:mynum);
+    xmax=max(Mx);
+    xmin=min(Mx);
+    ymax=max(My);
+    ymin=min(My);
+    xmin=round(xmin);
+    xmax=round(xmax);
+    ymin=round(ymin);
+    ymax=round(ymax);
+    xlabel({['方位角phi/degree'],...
+            ['估计方位角：' num2str(xmin) '° ~' num2str(xmax) '°'],...
+            ['估计俯仰角：' num2str(ymin) '° ~' num2str(ymax) '°']});
+    rectangle('Position',[xmin ymin (xmax-xmin) (ymax-ymin)],'EdgeColor',[1 1 1],'LineWidth',2);
+    
 end 
     
 
@@ -273,6 +304,8 @@ function normaldbf()
     xlabel('方位角phi/degree');
     ylabel('俯仰角theta/degree');    
     colorbar;
+
+    
 
 end 
 
