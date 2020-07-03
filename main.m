@@ -4,7 +4,7 @@
     * Author: ZhicongSun from HITWH
     * Email:hitsunzhicong@163.com
     * Github address: https://github.com/RadarSun
-    * Data: from 2020.03.05 to 2020.03.12
+    * Data: from 2020.03.05 to 2020.06.08
 %}
 
 %%
@@ -22,7 +22,7 @@ g_signal.freq = 4.7*10^6;     %发射（接收）信号频率4.7Mhz
 g_signal.lamda = (3*10^8)/g_signal.freq;%发射（接收）信号波长
 
 %默认的可变参数
-testmode = 'doa';
+testmode = 'dbf';
 g_array.num = 16;                %天线阵元总个数
 g_array.x_num = 8;		        %X方向阵元个数
 g_array.y_num = 8;		        %Y方向阵元个数
@@ -45,6 +45,7 @@ if((strcmp(testmode,'array_num')==0)&(strcmp(testmode,'array_span')==0))
 end
 switch testmode
     case 'array_num'
+        %测试阵元数目对方向图的影响
         g_array.num = 8;                %天线阵元总个数
         g_array.x_num = 4;		        %X方向阵元个数
         g_array.y_num = 4;		        %Y方向阵元个数
@@ -67,6 +68,7 @@ switch testmode
         g_array.y_pos = 0 : g_array.span : (g_array.y_num-1)*g_array.span;
         beamforming('normal');
     case 'array_span'
+        %测试阵元间距对方向图的影响
         g_array.span = g_signal.lamda/4; %阵元间距
         g_array.x_pos = g_array.span : g_array.span : (g_array.x_num)*g_array.span;
         g_array.y_pos = 0 : g_array.span : (g_array.y_num-1)*g_array.span;
@@ -81,6 +83,7 @@ switch testmode
         beamforming('normal');
     case 'snapshot_num'
     case 'doa'
+        %测试超分辨DOA估计算法
 %         g_array.num = 32;                %天线阵元总个数
 %         g_array.x_num = 16;		        %X方向阵元个数
 %         g_array.y_num = 16;		        %Y方向阵元个数
@@ -112,11 +115,12 @@ switch testmode
         doa();
         
     case 'dbf'
-        dbf_mode = 'capon';
+        %测试波束扫描测角算法
+        dbf_mode = 'capon';%多种波束扫描测角算法，用dbf_mode值为标志
         switch dbf_mode
             case 'normal_and_capon'
-                %% 对比二维普通波束形成和二维capon
-                                %可分辨
+                %对比二维普通波束形成和二维capon
+                %%可分辨
                 g_echos.theta.num = [34,60];
                 g_echos.phi.num = [60,35];
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -128,7 +132,7 @@ switch testmode
                 g_echos.signal=rand(g_echos.num,g_echos.snapshot);
                 beamforming('normal');
                 beamforming('capon');
-                %不可分辨
+                %%不可分辨
                 g_echos.theta.num = [34,50];
                 g_echos.phi.num = [40,34];
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -140,7 +144,7 @@ switch testmode
                 g_echos.signal=rand(g_echos.num,g_echos.snapshot);
                 beamforming('normal');
                 beamforming('capon');
-%                 %可分辨
+%                 %%可分辨
 %                 g_echos.theta.num = [34,60];
 %                 g_echos.phi.num = [60,35];
 %                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -152,7 +156,7 @@ switch testmode
 %                 g_echos.signal=rand(g_echos.num,g_echos.snapshot);
 %                 beamforming('normal');
 %                 beamforming('capon');
-%                 %不可分辨
+%                 %%不可分辨
 %                 g_echos.theta.num = [34,50];
 %                 g_echos.phi.num = [40,34];
 %                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -166,9 +170,13 @@ switch testmode
 %                 beamforming('capon');
 
             case 'capon' 
-                %% 测试二维capon
-                g_echos.theta.num = [15 34,60 70 -70 -55 -35 -15 -15  -30 -40  -60];
-                g_echos.phi.num = [70 60 35 15 -10 -30 -50 -65 -45  15 35  60];
+                %测试二维capon
+                % g_echos.theta.num = [15 34,60 70 -70 -55 -35 -15 -15  -30 -40  -60];
+                % g_echos.phi.num = [70 60 35 15 -10 -30 -50 -65 -45  15 35  60];
+                % g_echos.theta.num = [15 15 15 15 20 20 20 20 ];
+                % g_echos.phi.num = [70 60 35 15 70 60 35 15 ];
+                g_echos.theta.num = [15 15 15 15 15 15 15 15];
+                g_echos.phi.num =   [65 55 45 45 35 25 15  5];
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
                 g_echos.phi.rad = g_echos.phi.num*g_para.rad;
                 g_echos.num = length(g_echos.theta.num);
@@ -179,7 +187,7 @@ switch testmode
                 beamforming('capon');
         
             case 'normal'
-                %% 测普通数字波束形成
+                %测普通数字波束形成
                 g_echos.theta.num = 45;
                 g_echos.phi.num = 50;
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -192,7 +200,7 @@ switch testmode
                 beamforming('normal');
 
             case 'normal_theta_and_direction'
-                %% 测指向方向对普通波束形成波束宽度的影响
+                %测指向方向对普通波束形成波束宽度的影响
                 g_echos.theta.num = 40;
                 g_echos.phi.num = 60;
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;
@@ -225,7 +233,7 @@ switch testmode
                 beamforming('normal');
 
             case 'normal_resolution'
-                %% 测普通波束形成分辨率问题
+                %测普通波束形成分辨率问题
                 g_echos.theta.num = [40,55];
                 g_echos.phi.num = [55,40];
                 g_echos.theta.rad = g_echos.theta.num*g_para.rad;

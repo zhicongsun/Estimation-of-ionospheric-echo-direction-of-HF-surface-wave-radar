@@ -17,7 +17,7 @@ function [abs_f,abs_p]=capon(theta0,element_num,d_lamda)
     if nargin == 0
         theta0 = 30;
     end
-    imag=sqrt(-1)
+    imag=sqrt(-1);
     snapshot = 200;
     snr = 10;
     theta=linspace(-90,90,200);

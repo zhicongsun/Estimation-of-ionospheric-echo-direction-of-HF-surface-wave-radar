@@ -33,8 +33,8 @@ function [beam,en] = nlms()
     theta=linspace(-90,90,200);
     beam=zeros(1,length(theta)); 
     for i = 1 : length(theta) 
-    a=exp(j*2*pi*d_lamda*[0:element_num-1].'*sin(-pi/2 + pi*(i-1)/200)); 
-    beam(i)=20*log10(abs(w'*a)); 
+        a=exp(j*2*pi*d_lamda*[0:element_num-1].'*sin(-pi/2 + pi*(i-1)/200)); 
+        beam(i)=20*log10(abs(w'*a)); 
     end 
     
     % % plotting 

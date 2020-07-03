@@ -12,7 +12,10 @@ function msnr()
     for i=1:L
         amp0=10*randn(1);
         amp1=200*randn(1);
-        ampn=1;    s(:,i)=amp0*exp(imag*2*pi*0.5*sin(theta0*pi/180)*[0:element_num-1]');   j(:,i)=amp1*exp(imag*2*pi*0.5*sin(theta1*pi/180)*[0:element_num-1]');    n(:,i)=ampn*exp(randn(element_num,1)+imag*randn(element_num,1));
+        ampn=1;  
+        s(:,i)=amp0*exp(imag*2*pi*0.5*sin(theta0*pi/180)*[0:element_num-1]'); 
+        j(:,i)=amp1*exp(imag*2*pi*0.5*sin(theta1*pi/180)*[0:element_num-1]');
+        n(:,i)=ampn*exp(randn(element_num,1)+imag*randn(element_num,1));
     end
     Rs=1/L*s*s';%信号自相关矩阵
     Rnj=1/L*(j*j'+n*n'); %干扰+噪声的自相关矩阵
