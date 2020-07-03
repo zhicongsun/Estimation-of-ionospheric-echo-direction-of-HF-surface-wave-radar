@@ -1,11 +1,11 @@
 # Estimation-of-ionospheric-echo-direction-of-HF-surface-wave-radar
-
-    工程功能：仿真各种回波估计算法，包括最佳权矢量波束形成算法、权值自适应调整算法、超分辨率DOA算法；  
-    算法覆盖一维和二维
-    本说明更新时间：2020.6.17
-    未尽事宜的更新见：https://github.com/RadarSun
-    有问题联系邮件：17863108229@163.com 
-    编程语言：matlab
+    * 工程名称：高频地波雷达电离层回波方向估计
+    * 工程功能：仿真各种回波估计算法，包括最佳权矢量波束形成算法、权值自适应调整算法、超分辨率DOA算法；  
+      算法覆盖一维和二维
+    * 本说明更新时间：2020.6.17
+    * 未尽事宜的更新见：https://github.com/RadarSun
+    * 有问题联系邮件：17863108229@163.com 
+    * 编程语言：matlab
 ## 程序说明：
 ### 1.	代码各文件功能：  
 a)	主程序为main.m：对应二维阵列的各种仿真；  
@@ -13,7 +13,7 @@ b)	主程序为main_1D.m：对应着一维阵列的各种仿真；
 c)	beamforming.m：二维阵列的各种波束形成测角算法；  
 d)	doa.m：二维阵列的各种超分辨率算法；  
 e)	gui.fig：通过matlab GUI工具打开可运行GUI界面，因为其中使用到了global变量，  
-    故在运行GUI前应先运行一次main.m，使global变量缓存到工作区；
+    故在运行GUI前应先运行一次main.m，使global变量缓存到工作区；  
 f)	normal.m/capon.m：一维的波束扫描测角算法；  
 g)	music.m/root_music.m/espirit.m/conjugate_esprit.m/ss_music.m/：一维的超分辨率DOA估计算法；  
 h)	lcmv.m/msnr.m：一维最佳权矢量波束形成算法；  
