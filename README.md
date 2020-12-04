@@ -15,35 +15,35 @@ The algorithm covers one dimension and two dimensions.
 ###  1. Functions of each file in the code:
 
 
-a) the main program is main.m: various simulations corresponding to two-dimensional arrays;
-B) the main program is main_1D.m: various simulations corresponding to one-dimensional arrays;
-c) beamforming.m: various beamforming angle measurement algorithms for two-dimensional arrays;
-d) doa.m: various super-resolution algorithms for two-dimensional arrays;
-e) gui.fig: Open the runnable GUI interface through matlab GUI tool, because global variables are used in it,
+a) the main program is main.m: various simulations corresponding to two-dimensional arrays;  
+b) the main program is main_1D.m: various simulations corresponding to one-dimensional arrays;  
+c) beamforming.m: various beamforming angle measurement algorithms for two-dimensional arrays;  
+d) doa.m: various super-resolution algorithms for two-dimensional arrays;  
+e) gui.fig: Open the runnable GUI interface through matlab GUI tool, because global variables are used in it,  
 Therefore, before running the GUI, you should run main.m to cache the global variables to the workspace;
-f) normal.m/capon.m: one-dimensional beam scanning angle measurement algorithm;
-g) music.m/root_music.m/espirit.m/speechgate_esprit.m/ss_music.m/: one-dimensional super-resolution DOA estimation algorithm;
-h) lcmv.m/msnr.m: one-dimensional optimal weight vector beamforming algorithm;
-(I) the one-dimensional adaptive weight adjustment algorithm;
-j) m file starting with test: Archive a small part of the old code. Do not use it;
-k) drawRect.m: The function of drawing a hollow box on an image;
-l) singlepulse.m: the attempt of single pulse angle measurement is immature, please do not use it;
-m) sidelencydata. mat: Doppler spectrum data of measured data.
-(n) recognise_area.m: the function of recognizing a color block, whose function is similar to the location of the license plate during license plate recognition;
+f) normal.m/capon.m: one-dimensional beam scanning angle measurement algorithm;  
+g) music.m/root_music.m/espirit.m/speechgate_esprit.m/ss_music.m/: one-dimensional super-resolution DOA estimation algorithm;  
+h) lcmv.m/msnr.m: one-dimensional optimal weight vector beamforming algorithm;  
+i) the one-dimensional adaptive weight adjustment algorithm;  
+j) m file starting with test: Archive a small part of the old code. Do not use it;  
+k) drawRect.m: The function of drawing a hollow box on an image;  
+l) singlepulse.m: the attempt of single pulse angle measurement is immature, please do not use it;  
+m) sidelencydata. mat: Doppler spectrum data of measured data.  
+n) recognise_area.m: the function of recognizing a color block, whose function is similar to the location of the license plate during license plate recognition;  
 
 
 ###  2. Simple user guide:
 
 
-a) the function of selecting and testing through testmode variables in the main.m file; The test of selecting beam scanning angle measurement through dbf_mode;
-B) the function of selecting and testing through the oned_testmode variable in the main_1D.m file;
+a) the function of selecting and testing through testmode variables in the main.m file; The test of selecting beam scanning angle measurement through dbf_mode;  
+b) the function of selecting and testing through the oned_testmode variable in the main_1D.m file;  
 
 
 ###  3. Precautions
 
 
-a) the frequently used array parameter is global, which needs to be declared as global when used elsewhere
-(B) most individual function files encapsulate the implementation and only need to use input and output variables.
+a) the frequently used array parameter is global, which needs to be declared as global when used elsewhere  
+b) most individual function files encapsulate the implementation and only need to use input and output variables.  
 c) some functions do not set initial default variables. Input variables, variable functions, and formats are required. See the description at the beginning of the function. For specific examples, see the corresponding main program main.m or main_1D.m.
 
 
