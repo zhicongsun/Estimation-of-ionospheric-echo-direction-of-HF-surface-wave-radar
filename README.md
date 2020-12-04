@@ -4,7 +4,7 @@
 The algorithm covers one dimension and two dimensions.
 - This instruction was updated on June 17, 2020.
 - For updates on uncovered matters, see: [ https://github.com/RadarSun ](https://github.com/RadarSun)
-- With problem mail contact
+- With problem mail contact, welcome to submit issues to improve this code if any problems were found
 - Programming Language: matlab
 
 
@@ -52,7 +52,7 @@ c) some functions do not set initial default variables. Input variables, variabl
     算法覆盖一维和二维
 * 本说明更新时间：2020.6.17
 * 未尽事宜的更新见：https://github.com/RadarSun
-* 有问题邮件联系
+* 有问题邮件联系，参考代码过程中发现问题，欢迎提交issues，共同把程序完善
 * 编程语言：matlab
 
 ## 程序说明：
